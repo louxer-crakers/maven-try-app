@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feri Pro Ultimate Dashboard</title>
+<title>Feri Pro Dashboard</title>
 <style>
 :root {
     --bg-primary: #0f172a;
