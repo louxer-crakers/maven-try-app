@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Deploy to Docker Host') {
             steps {
-                node {
+                script {
                     def remote = [:]
                     remote.name = 'tomcat'
                     remote.host = '35.174.60.5'
