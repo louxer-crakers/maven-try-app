@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -807,7 +807,8 @@ class Particle {
         if(this.y > bgCanvas.height) this.y = 0;
     }
     draw() {
-        bgCtx.fillStyle = `rgba(99, 102, 241, ${this.alpha})`;
+        // FIXED: Replaced template literal with string concatenation for JSP compatibility
+        bgCtx.fillStyle = 'rgba(99, 102, 241, ' + this.alpha + ')';
         bgCtx.beginPath();
         bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         bgCtx.fill();
@@ -824,7 +825,8 @@ function animateBg() {
             const dy = p1.y - p2.y;
             const dist = Math.sqrt(dx*dx + dy*dy);
             if(dist < 100) {
-                bgCtx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - dist/100)})`;
+                // FIXED: Replaced template literal with string concatenation for JSP compatibility
+                bgCtx.strokeStyle = 'rgba(99, 102, 241, ' + (0.1 * (1 - dist/100)) + ')';
                 bgCtx.beginPath();
                 bgCtx.moveTo(p1.x, p1.y);
                 bgCtx.lineTo(p2.x, p2.y);
@@ -922,10 +924,11 @@ termInput.addEventListener('keypress', function(e) {
         
         const line = document.createElement('div');
         line.className = 'output-line';
-        line.innerHTML = `<span class="prompt">feri@pro:~$</span> ${input}`;
+        // FIXED: Replaced template literal with string concatenation for JSP compatibility
+        line.innerHTML = '<span class="prompt">feri@pro:~$</span> ' + input;
         termOutput.appendChild(line);
 
-        let response = `Command not found: ${cmd}`;
+        let response = 'Command not found: ' + cmd;
         if (commands[cmd]) {
             response = typeof commands[cmd] === 'function' ? commands[cmd]() : commands[cmd];
             if (cmd === 'echo') response = args;
