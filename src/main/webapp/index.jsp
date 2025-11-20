@@ -198,13 +198,19 @@
     .code-blue { color: #4cc9f0; }
     .code-pink { color: #f72585; }
 
-    /* --- INTERACTIVE CANVAS (DRAGON) --- */
+/* --- INTERACTIVE CANVAS (DRAGON) --- */
     #dragonCanvas {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        z-index: 0;
-        pointer-events: none; /* Allows interaction with elements below */
+        z-index: 1; /* Ubah ini jadi 1 biar di atas background */
+        pointer-events: none; /* Biar mouse tembus ke tombol di bawahnya */
+    }
+    
+    /* Pastikan konten lain di atas naga */
+    .sidebar, .main-content {
+        z-index: 10; /* Harus lebih besar dari 1 */
+        position: relative;
     }
 
     .tab-content { display: none; animation: fadeIn 0.5s ease; }
