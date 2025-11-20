@@ -3,6 +3,15 @@ pipeline {
 
     stages {
 
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    sudo yum install git maven docker -y
+                    sudo systemctl start docker
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 sh '''
