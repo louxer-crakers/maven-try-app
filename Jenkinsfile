@@ -29,5 +29,21 @@ pipeline {
                 '''
             }
         }
+        stage('Login and upload image') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 419370949297.dkr.ecr.us-east-1.amazonaws.com
+                    docker tag maven-try-app:latest 419370949297.dkr.ecr.us-east-1.amazonaws.com/hehe:latest
+                    docker push 419370949297.dkr.ecr.us-east-1.amazonaws.com/hehe:latest
+                '''
+            }
+        }
+        stage('Reload service in ECS') {
+            steps {
+                sh '''
+                    aws ecs update-service --cluster crafty-rhinoceros-iwalum --service hehet-service-v367vtkh --force-new-deployment
+                '''
+            }
+        }
     }
 }
