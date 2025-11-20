@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aurora Workspace Pro</title>
+<title>Aurora Workspace Pro - Dragon Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -16,6 +16,7 @@
         --accent: #00f2ff;
         --danger: #ff0055;
         --success: #00ff9d;
+        --dragon-color: #8c26f0; /* New color for dragon glow */
     }
 
     * {
@@ -197,14 +198,13 @@
     .code-blue { color: #4cc9f0; }
     .code-pink { color: #f72585; }
 
-    /* --- INTERACTIVE CANVAS --- */
-    #neuralCanvas {
+    /* --- INTERACTIVE CANVAS (DRAGON) --- */
+    #dragonCanvas {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
         z-index: 0;
-        opacity: 0.5;
-        pointer-events: none;
+        pointer-events: none; /* Allows interaction with elements below */
     }
 
     .tab-content { display: none; animation: fadeIn 0.5s ease; }
@@ -213,7 +213,7 @@
 
     .profile-img {
         width: 50px; height: 50px; border-radius: 50%;
-        background: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix');
+        background: url('https://api.dicebear.com/7.x/avataaars/svg?seed=FeriDev'); /* Avatar for Feri */
         border: 2px solid white;
         margin-top: auto;
         margin-bottom: 20px;
@@ -260,7 +260,7 @@
             <div class="bento-grid">
                 <div class="glass-card span-2 welcome-widget">
                     <div>
-                        <h1 id="greeting">Hello, Developer</h1>
+                        <h1 id="greeting">Hello, Feri</h1>
                         <p style="color:rgba(255,255,255,0.8)">Your server architecture is running smoothly.</p>
                     </div>
                     <div style="font-size: 4rem; opacity: 0.2;">🚀</div>
@@ -369,164 +369,91 @@
                 </div>
             </div>
         </div>
-
-        <canvas id="neuralCanvas"></canvas>
+        
+        <div id="analytics" class="tab-content">
+            <div class="glass-card" style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <h1 style="font-size:3rem;">Advanced Analytics</h1>
+                <p style="color:var(--text-dim)">Coming soon to optimize your workflow with AI insights!</p>
+                <div style="font-size: 5rem; margin-top:30px; opacity:0.3;">📊</div>
+            </div>
+        </div>
 
     </main>
 
-<script>
-    // --- CLOCK LOGIC ---
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('clock-time').innerText = hours + ":" + minutes;
-        
-        const options = { weekday: 'short', day: 'numeric', month: 'short' };
-        document.getElementById('clock-date').innerText = now.toLocaleDateString('en-US', options);
-        
-        // Update Greeting
-        const hour = now.getHours();
-        let greet = "Good Evening";
-        if(hour < 12) greet = "Good Morning";
-        else if(hour < 18) greet = "Good Afternoon";
-        document.getElementById('greeting').innerText = greet + ", Feri";
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    <canvas id="dragonCanvas"></canvas>
 
-    // --- TAB SWITCHER ---
-    window.switchTab = function(tabId, el) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    // --- NEURAL NETWORK VISUALIZER (CANVAS) ---
-    const canvas = document.getElementById('neuralCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.size = Math.random() * 2;
-        }
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-            if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        }
-        draw() {
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-            ctx.fill();
-        }
-    }
-
-    for(let i=0; i<60; i++) particles.push(new Particle());
-
-    // Mouse interaction
-    let mouse = { x: null, y: null };
-    window.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    });
-
-    function animateParticles() {
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        
-        particles.forEach(p => {
-            p.update();
-            p.draw();
+    <script>
+        // --- CLOCK LOGIC ---
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock-time').innerText = hours + ":" + minutes;
             
-            // Connect to mouse
-            if(mouse.x) {
-                const dx = p.x - mouse.x;
-                const dy = p.y - mouse.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 150) {
-                    ctx.strokeStyle = `rgba(0, 242, 255, ${1 - dist/150})`;
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(mouse.x, mouse.y);
-                    ctx.stroke();
-                }
+            const options = { weekday: 'short', day: 'numeric', month: 'short' };
+            document.getElementById('clock-date').innerText = now.toLocaleDateString('en-US', options);
+            
+            // Update Greeting
+            const hour = now.getHours();
+            let greet = "Good Evening";
+            if(hour < 12) greet = "Good Morning";
+            else if(hour < 18) greet = "Good Afternoon";
+            document.getElementById('greeting').innerText = greet + ", Feri"; // Personalized greeting for Feri
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- TAB SWITCHER ---
+        window.switchTab = function(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // --- TRAFFIC CHART (SIMPLE LINE) ---
+        const tCanvas = document.getElementById('trafficCanvas');
+        if(tCanvas) {
+            const tCtx = tCanvas.getContext('2d');
+            // Fix scale
+            tCanvas.width = tCanvas.parentElement.offsetWidth;
+            tCanvas.height = 200;
+            
+            let points = [];
+            for(let i=0; i<10; i++) points.push(Math.random() * 100 + 50);
+            
+            function drawChart() {
+                tCtx.clearRect(0,0,tCanvas.width, tCanvas.height);
+                
+                tCtx.beginPath();
+                tCtx.strokeStyle = '#00f2ff';
+                tCtx.lineWidth = 3;
+                tCtx.shadowBlur = 10;
+                tCtx.shadowColor = '#00f2ff';
+                
+                const step = tCanvas.width / (points.length - 1);
+                
+                points.forEach((p, i) => {
+                    const x = i * step;
+                    const y = tCanvas.height - p;
+                    if(i===0) tCtx.moveTo(x, y);
+                    else tCtx.lineTo(x, y);
+                });
+                tCtx.stroke();
+                
+                // Area gradient
+                tCtx.lineTo(tCanvas.width, tCanvas.height);
+                tCtx.lineTo(0, tCanvas.height);
+                const grad = tCtx.createLinearGradient(0, 0, 0, tCanvas.height);
+                grad.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
+                grad.addColorStop(1, 'transparent');
+                tCtx.fillStyle = grad;
+                tCtx.fill();
             }
-
-            // Connect to each other
-            particles.forEach(p2 => {
-                const dx = p.x - p2.x;
-                const dy = p.y - p2.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 100) {
-                    ctx.strokeStyle = `rgba(255,255,255, ${0.1 * (1 - dist/100)})`;
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
-                }
-            });
-        });
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
-
-    // --- TRAFFIC CHART (SIMPLE LINE) ---
-    const tCanvas = document.getElementById('trafficCanvas');
-    if(tCanvas) {
-        const tCtx = tCanvas.getContext('2d');
-        // Fix scale
-        tCanvas.width = tCanvas.parentElement.offsetWidth;
-        tCanvas.height = 200;
-        
-        let points = [];
-        for(let i=0; i<10; i++) points.push(Math.random() * 100 + 50);
-        
-        function drawChart() {
-            tCtx.clearRect(0,0,tCanvas.width, tCanvas.height);
-            
-            tCtx.beginPath();
-            tCtx.strokeStyle = '#00f2ff';
-            tCtx.lineWidth = 3;
-            tCtx.shadowBlur = 10;
-            tCtx.shadowColor = '#00f2ff';
-            
-            const step = tCanvas.width / (points.length - 1);
-            
-            points.forEach((p, i) => {
-                const x = i * step;
-                const y = tCanvas.height - p;
-                if(i===0) tCtx.moveTo(x, y);
-                else tCtx.lineTo(x, y);
-            });
-            tCtx.stroke();
-            
-            // Area gradient
-            tCtx.lineTo(tCanvas.width, tCanvas.height);
-            tCtx.lineTo(0, tCanvas.height);
-            const grad = tCtx.createLinearGradient(0, 0, 0, tCanvas.height);
-            grad.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
-            grad.addColorStop(1, 'transparent');
-            tCtx.fillStyle = grad;
-            tCtx.fill();
+            drawChart();
         }
-        drawChart();
-    }
-</script>
+    </script>
+    <script src="js/dragon-viz.js"></script>
 </body>
 </html>
