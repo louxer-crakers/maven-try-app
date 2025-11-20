@@ -15,9 +15,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    rm -rf maven-try-app
-                    git clone https://github.com/louxer-crakers/maven-try-app
-                    cd maven-try-app
                     mvn clean package
                 '''
             }
