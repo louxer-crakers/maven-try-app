@@ -26,9 +26,9 @@ pipeline {
         stage('Deploy to Docker Host') {
             steps {
                 sh '''
-                    docker build -t maven-try-app:latest .
-                    docker rm -f hehe || true
-                    docker run -d --name hehe -p 8080:8080 maven-try-app:latest
+                    sudo docker build -t maven-try-app:latest .
+                    sudo docker rm -f hehe || true
+                    sudo docker run -d --name hehe -p 8080:8080 maven-try-app:latest
                 '''
             }
         }
