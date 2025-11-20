@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent agent1
 
     stages {
 
@@ -16,27 +16,11 @@ pipeline {
 
         stage('Deploy to Docker Host') {
             steps {
-                script {
-                    def remote = [
-                        name: 'tomcat',
-                        host: '35.174.60.5',
-                        user: 'dockeradmin',
-                        password: 'admin123',
-                        allowAnyHosts: true
-                    ]
-
-                    sshPut remote: remote, 
-                           from: 'maven-try-app/target/my-webapp.war',
-                           into: '.'
-
-                    sshPut remote: remote,
-                           from: 'maven-try-app/Dockerfile',
-                           into: '.'
-
-                    sshCommand remote: remote, command: "docker build -t my-webapp-image ."
-                    sshCommand remote: remote, command: "docker rm -f my-webapp-container || true"
-                    sshCommand remote: remote, command: "docker run -d -p 8080:8080 --name my-webapp-container my-webapp-image"
-                }
+                sh '''
+                    docker build -t maven-try-app:latest .
+                    docker rm -f hehe || true
+                    docker run -d --name hehe -p 8080:8080 maven-try-app:latest
+                '''
             }
         }
     }
