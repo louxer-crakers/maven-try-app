@@ -1,1046 +1,795 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feri Pro Ultimate Dashboard</title>
+<title>Lumina Creative OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --accent: #6366f1;
-    --accent-glow: rgba(99, 102, 241, 0.5);
-    --text-main: #f8fafc;
-    --text-dim: #94a3b8;
-    --glass: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
+    --bg: #e0e5ec;
+    --text-main: #4a5568;
+    --text-light: #a0aec0;
+    --accent: #667eea;
+    --accent-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --shadow-light: #ffffff;
+    --shadow-dark: #a3b1c6;
+    --radius: 30px;
+    --neu-flat: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+    --neu-pressed: inset 6px 6px 10px var(--shadow-dark), inset -6px -6px 10px var(--shadow-light);
+    --neu-icon: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
 }
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; outline: none; }
+
 body {
-    background-color: var(--bg-primary);
+    background-color: var(--bg);
     color: var(--text-main);
     height: 100vh;
+    display: flex;
     overflow: hidden;
-    display: flex;
 }
-#bg-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-.app-container {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%);
-}
+
+/* --- SIDEBAR --- */
 .sidebar {
-    width: 260px;
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    border-right: 1px solid var(--glass-border);
+    width: 100px;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    transition: transform 0.3s ease;
-}
-.logo-area {
-    display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 30px 0;
+    z-index: 10;
 }
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--accent), #a855f7);
-    border-radius: 10px;
+
+.brand {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 20px;
-    box-shadow: 0 0 15px var(--accent-glow);
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--accent);
+    margin-bottom: 50px;
 }
-.logo-text {
-    font-size: 22px;
-    font-weight: 700;
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+
 .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    flex: 1;
+    gap: 30px;
 }
-.nav-item {
-    padding: 12px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-dim);
-    transition: all 0.2s;
-    font-size: 14px;
-    font-weight: 500;
-}
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-main);
-}
-.nav-item.active {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), transparent);
-    border-left: 3px solid var(--accent);
-    color: var(--text-main);
-}
-.nav-icon {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
-.server-status {
-    margin-top: auto;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-}
-.status-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 8px;
-    color: var(--text-dim);
-}
-.status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 8px var(--success);
-    animation: pulse 2s infinite;
-}
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.top-bar {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    border-bottom: 1px solid var(--glass-border);
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(5px);
-}
-.search-box {
-    position: relative;
-    width: 300px;
-}
-.search-input {
-    width: 100%;
-    background: var(--bg-secondary);
-    border: 1px solid var(--glass-border);
-    padding: 10px 15px 10px 40px;
-    border-radius: 20px;
-    color: var(--text-main);
-    font-size: 14px;
-    transition: all 0.3s;
-}
-.search-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-.search-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-dim);
-}
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.notification-bell {
-    position: relative;
-    cursor: pointer;
-}
-.badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--danger);
-    color: white;
-    font-size: 10px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%236366f1"/><circle cx="50" cy="40" r="20" fill="white"/><path d="M20 90 Q50 60 80 90" fill="white"/></svg>');
-    border: 2px solid var(--glass-border);
-}
-.content-area {
-    padding: 30px;
-    overflow-y: auto;
-    flex: 1;
-}
-.page-section {
-    display: none;
-    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.page-section.active {
-    display: block;
-}
-.grid-dashboard {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-    margin-bottom: 30px;
-}
-.card {
-    background: linear-gradient(160deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.4));
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--accent), #a855f7);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.card:hover::before {
-    opacity: 1;
-}
-.stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 10px 0 5px;
-}
-.stat-label {
-    color: var(--text-dim);
-    font-size: 13px;
-}
-.stat-trend {
-    font-size: 12px;
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.trend-up { color: var(--success); }
-.trend-down { color: var(--danger); }
-.large-card {
-    grid-column: span 2;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-}
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.card-title {
-    font-size: 16px;
-    font-weight: 600;
-}
-.chart-container {
-    flex: 1;
-    width: 100%;
-    position: relative;
-}
-.terminal-window {
-    background: #0d1117;
-    border-radius: 10px;
-    border: 1px solid #30363d;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 0;
-    overflow: hidden;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-.terminal-header {
-    background: #161b22;
-    padding: 10px 15px;
-    display: flex;
-    gap: 8px;
-    border-bottom: 1px solid #30363d;
-}
-.term-btn {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-.term-close { background: #ff5f56; }
-.term-min { background: #ffbd2e; }
-.term-max { background: #27c93f; }
-.terminal-body {
-    padding: 15px;
-    flex: 1;
-    overflow-y: auto;
-    color: #c9d1d9;
-    font-size: 14px;
-}
-.output-line {
-    margin-bottom: 5px;
-    line-height: 1.5;
-}
-.input-line {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-.prompt { color: var(--success); }
-#term-input {
-    background: transparent;
-    border: none;
-    color: white;
-    flex: 1;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-}
-.game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-#snake-canvas {
-    background: rgba(0, 0, 0, 0.3);
-    border: 2px solid var(--accent);
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-}
-.btn-primary {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    margin-top: 20px;
-    transition: all 0.2s;
-}
-.btn-primary:hover {
-    background: #4f46e5;
-    transform: scale(1.05);
-}
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    text-align: left;
-    padding: 15px;
-    border-bottom: 1px solid var(--glass-border);
-}
-th {
-    color: var(--text-dim);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-tr:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-}
-.bg-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-.bg-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-.bg-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.media-player {
-    display: flex;
-    gap: 20px;
-    height: 100%;
-}
-.player-main {
-    flex: 2;
-    background: linear-gradient(135deg, #2e1065, #4c1d95);
-    border-radius: 20px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-}
-.disk {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: conic-gradient(#444, #111, #444);
-    margin: 0 auto;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    animation: spin 4s linear infinite;
-    border: 5px solid #222;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.disk::after {
-    content: '';
+
+.nav-btn {
     width: 60px;
     height: 60px;
-    background: var(--accent);
-    border-radius: 50%;
-}
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.player-controls {
+    border-radius: 20px;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    color: var(--text-light);
 }
-.ctrl-btn {
-    background: rgba(255,255,255,0.1);
+
+.nav-btn:hover { transform: translateY(-2px); color: var(--accent); }
+.nav-btn.active {
+    box-shadow: var(--neu-pressed);
+    color: var(--accent);
+    transform: none;
+}
+.nav-btn svg { width: 24px; height: 24px; }
+
+/* --- MAIN AREA --- */
+.main-container {
+    flex: 1;
+    padding: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-title h1 { font-size: 28px; font-weight: 800; }
+.header-title p { color: var(--text-light); font-size: 14px; }
+
+.search-bar {
+    width: 400px;
+    height: 50px;
+    border-radius: 25px;
+    background: var(--bg);
+    box-shadow: var(--neu-pressed);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.search-bar input {
+    background: transparent;
     border: none;
+    width: 100%;
+    margin-left: 10px;
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+.profile-widget {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.btn-round {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    color: white;
-    cursor: pointer;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: 0.2s;
+    cursor: pointer;
 }
-.ctrl-btn:hover { background: var(--accent); }
-.play-list {
-    flex: 1;
-    background: var(--bg-secondary);
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid var(--glass-border);
+
+/* --- CONTENT VIEWS --- */
+.view-section {
+    display: none;
+    height: 100%;
+    animation: fadeScale 0.4s ease;
 }
-.track-item {
-    padding: 12px;
-    border-bottom: 1px solid var(--glass-border);
+.view-section.active { display: block; }
+
+@keyframes fadeScale {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* --- DASHBOARD GRID --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 150px 1fr;
+    gap: 30px;
+    height: 100%;
+}
+
+.stat-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--neu-flat);
+    padding: 25px;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--accent-grad);
+    opacity: 0.1;
+}
+
+.stat-value { font-size: 36px; font-weight: 800; color: #2d3748; }
+.stat-label { font-size: 14px; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.stat-icon { position: absolute; top: 20px; right: 20px; color: var(--accent); }
+
+.big-widget {
+    grid-column: span 2;
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--neu-flat);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.side-widget {
+    grid-column: span 1;
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--neu-flat);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+}
+
+/* --- KANBAN BOARD --- */
+.kanban-container {
+    display: flex;
+    gap: 30px;
+    height: 85vh;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+
+.kanban-col {
+    flex: 1;
+    min-width: 300px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--neu-pressed);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.col-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 10px;
+    font-weight: 700;
+}
+
+.task-card {
+    background: var(--bg);
+    border-radius: 15px;
+    box-shadow: var(--neu-flat);
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: grab;
+    transition: transform 0.2s;
+    border-left: 5px solid var(--accent);
+}
+
+.task-card:hover { transform: translateY(-3px); }
+.task-card p { font-size: 14px; margin-bottom: 10px; font-weight: 600; }
+.task-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); }
+
+.add-btn {
+    margin-top: auto;
+    padding: 12px;
+    border-radius: 15px;
+    border: none;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
+    color: var(--accent);
+    font-weight: 700;
     cursor: pointer;
     transition: 0.2s;
 }
-.track-item:hover { background: rgba(255,255,255,0.05); }
-.track-num { color: var(--text-dim); font-size: 12px; }
-@media (max-width: 1024px) {
-    .grid-dashboard { grid-template-columns: repeat(2, 1fr); }
+.add-btn:hover { box-shadow: var(--neu-pressed); }
+
+/* --- FOCUS TIMER --- */
+.timer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
-@media (max-width: 768px) {
-    .sidebar { position: absolute; transform: translateX(-100%); z-index: 100; height: 100%; }
-    .sidebar.open { transform: translateX(0); }
-    .grid-dashboard { grid-template-columns: 1fr; }
-    .large-card { grid-column: span 1; }
-    .media-player { flex-direction: column; }
+
+.timer-circle {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 40px;
 }
-.progress-bar {
+
+.timer-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 300px; height: 300px;
+    transform: rotate(-90deg);
+}
+
+.timer-path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 10;
+    stroke-dasharray: 880; /* 2 * PI * 140 */
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.time-display { font-size: 48px; font-weight: 800; color: var(--text-main); }
+
+.timer-controls { display: flex; gap: 20px; }
+.btn-pill {
+    padding: 15px 40px;
+    border-radius: 30px;
+    border: none;
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
+    font-weight: 700;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+.btn-pill.primary { color: var(--accent); }
+.btn-pill:active { box-shadow: var(--neu-pressed); transform: translateY(2px); }
+
+/* --- CREATIVE CANVAS (PHYSICS) --- */
+.canvas-wrapper {
     width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 3px;
-    margin-bottom: 10px;
+    height: 100%;
+    border-radius: var(--radius);
+    box-shadow: var(--neu-pressed);
+    overflow: hidden;
     position: relative;
 }
-.progress-fill {
+#physicsCanvas { width: 100%; height: 100%; background: var(--bg); }
+.canvas-overlay {
     position: absolute;
-    height: 100%;
-    background: var(--accent);
-    width: 45%;
-    border-radius: 3px;
+    top: 20px; left: 20px;
+    pointer-events: none;
 }
+
+/* --- AI CHAT --- */
+.chat-interface {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--neu-pressed);
+    overflow: hidden;
+}
+.chat-window { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+.chat-bubble {
+    max-width: 70%;
+    padding: 15px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.bot {
+    background: var(--bg);
+    box-shadow: var(--neu-flat);
+    align-self: flex-start;
+    border-top-left-radius: 5px;
+}
+.user {
+    background: var(--accent);
+    color: white;
+    box-shadow: 5px 5px 15px rgba(102, 126, 234, 0.4);
+    align-self: flex-end;
+    border-top-right-radius: 5px;
+}
+.chat-input-area {
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+}
+#chatInput {
+    flex: 1;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    background: var(--bg);
+    box-shadow: var(--neu-pressed);
+}
+
+/* Utility Classes */
+.hidden { display: none; }
 </style>
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
-
-<div class="app-container">
-    <aside class="sidebar">
-        <div class="logo-area">
-            <div class="logo-icon">F</div>
-            <div class="logo-text">FERI PRO</div>
+<aside class="sidebar">
+    <div class="brand">L</div>
+    <nav class="nav-menu">
+        <div class="nav-btn active" onclick="switchTab('dashboard', this)" title="Dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         </div>
-        <nav class="nav-menu">
-            <div class="nav-item active" onclick="switchTab('dashboard', this)">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                Dashboard
-            </div>
-            <div class="nav-item" onclick="switchTab('terminal', this)">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4z"/><path d="M7.5 15l4.5-3-4.5-3v6zM12 15h5v-2h-5v2z"/></svg>
-                Terminal
-            </div>
-            <div class="nav-item" onclick="switchTab('media', this)">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.16-1.75 4.43-4H15v-6h4V3h-7z"/></svg>
-                Media
-            </div>
-            <div class="nav-item" onclick="switchTab('game', this)">
-                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                GameZone
-            </div>
-        </nav>
-        <div class="server-status">
-            <div class="status-header">
-                <span>MAVEN BUILD</span>
-                <span id="cpu-val">24%</span>
-            </div>
-            <div class="progress-bar" style="margin:0"><div class="progress-fill" id="cpu-bar" style="width:24%"></div></div>
-            <div class="status-header" style="margin-top:10px">
-                <span>MEMORY</span>
-                <span id="mem-val">1.2GB</span>
-            </div>
-            <div class="progress-bar" style="margin:0"><div class="progress-fill" id="mem-bar" style="width:45%; background:#f59e0b"></div></div>
+        <div class="nav-btn" onclick="switchTab('kanban', this)" title="Project Board">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 6.5v7L12 22 2 15.5v-7L12 2z"></path><path d="M12 22v-6.5"></path><path d="M22 8.5l-10 7-10-7"></path><path d="M2 15.5l10-7 10 7"></path><path d="M12 2v6.5"></path></svg>
         </div>
-    </aside>
+        <div class="nav-btn" onclick="switchTab('focus', this)" title="Focus Timer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="nav-btn" onclick="switchTab('playground', this)" title="Physics Playground">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+        </div>
+        <div class="nav-btn" onclick="switchTab('ai', this)" title="Lumina AI">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+    </nav>
+</aside>
 
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="search-box">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" class="search-input" placeholder="Search command or file...">
+<main class="main-container">
+    <header class="header">
+        <div class="header-title">
+            <h1 id="greeting">Good Morning, Creator</h1>
+            <p>Welcome back to Lumina OS v2.0</p>
+        </div>
+        <div class="search-bar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Search projects, assets, or commands...">
+        </div>
+        <div class="profile-widget">
+            <div class="btn-round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             </div>
-            <div class="user-profile">
-                <div class="notification-bell">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                    <div class="badge">3</div>
-                </div>
-                <div style="text-align:right">
-                    <div style="font-size:14px; font-weight:600">Feri Developer</div>
-                    <div style="font-size:11px; color:var(--text-dim)">Admin</div>
-                </div>
-                <div class="avatar"></div>
+            <div class="btn-round" style="background: var(--accent-grad); box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
         </div>
+    </header>
 
-        <div class="content-area">
-            
-            <!-- DASHBOARD SECTION -->
-            <div id="dashboard" class="page-section active">
-                <h2 style="margin-bottom:20px; font-weight:300">System Overview</h2>
-                <div class="grid-dashboard">
-                    <div class="card">
-                        <div class="stat-label">TOTAL VISITORS</div>
-                        <div class="stat-value">128,492</div>
-                        <div class="stat-trend trend-up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                            <span>+12.5% this week</span>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="stat-label">REVENUE</div>
-                        <div class="stat-value">$45,230</div>
-                        <div class="stat-trend trend-up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                            <span>+8.2% vs last month</span>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="stat-label">ACTIVE SESSIONS</div>
-                        <div class="stat-value">1,204</div>
-                        <div class="stat-trend trend-down">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
-                            <span>-2.1% busy time</span>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="stat-label">SERVER LOAD</div>
-                        <div class="stat-value">34ms</div>
-                        <div class="stat-trend trend-up">
-                            <span>Optimal</span>
-                        </div>
-                    </div>
+    <section id="dashboard" class="view-section active">
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Pending Tasks</div>
+                <svg class="stat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4.5h</div>
+                <div class="stat-label">Focus Time</div>
+                <svg class="stat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">92%</div>
+                <div class="stat-label">Efficiency</div>
+                <svg class="stat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </div>
 
-                    <div class="card large-card">
-                        <div class="card-header">
-                            <div class="card-title">Traffic Analytics</div>
-                            <select style="background:#0f172a; color:white; border:1px solid #333; padding:5px; border-radius:5px">
-                                <option>Last 7 Days</option>
-                                <option>Last Month</option>
-                            </select>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="trafficChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card large-card" style="overflow-y:auto">
-                        <div class="card-header">
-                            <div class="card-title">Recent Deployments</div>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Project</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Commit</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>FeriPro_Core</td>
-                                        <td><span class="status-badge bg-success">Deployed</span></td>
-                                        <td>Today, 10:23</td>
-                                        <td style="font-family:monospace">a1b2c3d</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Auth_Service</td>
-                                        <td><span class="status-badge bg-warning">Building</span></td>
-                                        <td>Today, 10:20</td>
-                                        <td style="font-family:monospace">f4e5d6</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Payment_GW</td>
-                                        <td><span class="status-badge bg-success">Deployed</span></td>
-                                        <td>Yesterday</td>
-                                        <td style="font-family:monospace">98h7g6</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Legacy_JSP</td>
-                                        <td><span class="status-badge bg-danger">Failed</span></td>
-                                        <td>Nov 14</td>
-                                        <td style="font-family:monospace">123456</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="big-widget">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <h3>Weekly Activity Flow</h3>
+                    <select style="border:none; background:transparent; color:var(--accent); font-weight:700"><option>This Week</option></select>
+                </div>
+                <div style="flex:1; display:flex; align-items:flex-end; justify-content:space-between; padding: 0 20px;">
+                    <div style="width:8%; height:40%; background:#cbd5e0; border-radius:10px;"></div>
+                    <div style="width:8%; height:60%; background:#cbd5e0; border-radius:10px;"></div>
+                    <div style="width:8%; height:30%; background:#cbd5e0; border-radius:10px;"></div>
+                    <div style="width:8%; height:85%; background:var(--accent); border-radius:10px; box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);"></div>
+                    <div style="width:8%; height:55%; background:#cbd5e0; border-radius:10px;"></div>
+                    <div style="width:8%; height:70%; background:#cbd5e0; border-radius:10px;"></div>
+                    <div style="width:8%; height:45%; background:#cbd5e0; border-radius:10px;"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding: 10px 20px 0; color:var(--text-light); font-size:12px;">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                 </div>
             </div>
 
-            <!-- TERMINAL SECTION -->
-            <div id="terminal" class="page-section">
-                <div class="terminal-window">
-                    <div class="terminal-header">
-                        <div class="term-btn term-close"></div>
-                        <div class="term-btn term-min"></div>
-                        <div class="term-btn term-max"></div>
-                        <span style="margin-left:10px; font-size:12px; color:#8b949e">feri@server:~/projects</span>
+            <div class="side-widget">
+                <h3 style="margin-bottom:20px">Storage</h3>
+                <div style="width:150px; height:150px; border-radius:50%; box-shadow:var(--neu-pressed); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                    <div style="width:120px; height:120px; border-radius:50%; background:var(--bg); box-shadow:var(--neu-flat); display:flex; align-items:center; justify-content:center; flex-direction:column;">
+                        <span style="font-size:24px; font-weight:800; color:var(--accent)">78%</span>
+                        <span style="font-size:12px; color:var(--text-light)">Used</span>
                     </div>
-                    <div class="terminal-body" id="term-output">
-                        <div class="output-line">Welcome to FeriOS Terminal v2.0.5 LTS</div>
-                        <div class="output-line">Last login: Tue Nov 19 14:02:33 on ttys000</div>
-                        <div class="output-line">Type 'help' for available commands.</div>
-                        <br>
+                </div>
+                <div style="width:100%;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                        <span>Documents</span><span>65 GB</span>
                     </div>
-                    <div style="padding: 0 15px 15px 15px;">
-                        <div class="input-line">
-                            <span class="prompt">feri@pro:~$</span>
-                            <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
-                        </div>
+                    <div style="width:100%; height:8px; background:#cbd5e0; border-radius:4px; margin-bottom:15px;">
+                        <div style="width:65%; height:100%; background:var(--accent); border-radius:4px;"></div>
+                    </div>
+                     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                        <span>Media</span><span>24 GB</span>
+                    </div>
+                    <div style="width:100%; height:8px; background:#cbd5e0; border-radius:4px;">
+                        <div style="width:24%; height:100%; background:#9f7aea; border-radius:4px;"></div>
                     </div>
                 </div>
             </div>
-
-            <!-- MEDIA SECTION -->
-            <div id="media" class="page-section">
-                <div class="media-player">
-                    <div class="player-main">
-                        <div style="text-align:center; margin-top:10px">
-                            <h3 style="font-size:24px">Neon Nights</h3>
-                            <p style="color:var(--text-dim)">Synthwave Collection</p>
-                        </div>
-                        <div class="disk"></div>
-                        
-                        <div>
-                            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; color:#ccc">
-                                <span>1:24</span>
-                                <span>3:45</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width:35%"></div>
-                            </div>
-                            <div class="player-controls">
-                                <button class="ctrl-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-                                <button class="ctrl-btn" style="width:60px; height:60px; background:white; color:black"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
-                                <button class="ctrl-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="play-list">
-                        <h3 style="margin-bottom:15px">Up Next</h3>
-                        <div class="track-item">
-                            <div class="track-num">01</div>
-                            <div>
-                                <div style="font-weight:600">Midnight City</div>
-                                <div style="font-size:12px; color:var(--text-dim)">M83</div>
-                            </div>
-                        </div>
-                        <div class="track-item">
-                            <div class="track-num">02</div>
-                            <div>
-                                <div style="font-weight:600">Tech Noir</div>
-                                <div style="font-size:12px; color:var(--text-dim)">Gunship</div>
-                            </div>
-                        </div>
-                        <div class="track-item">
-                            <div class="track-num">03</div>
-                            <div>
-                                <div style="font-weight:600">Nightcall</div>
-                                <div style="font-size:12px; color:var(--text-dim)">Kavinsky</div>
-                            </div>
-                        </div>
-                        <div class="track-item">
-                            <div class="track-num">04</div>
-                            <div>
-                                <div style="font-weight:600">Resonance</div>
-                                <div style="font-size:12px; color:var(--text-dim)">Home</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GAME SECTION -->
-            <div id="game" class="page-section" style="height:100%">
-                <div class="game-container">
-                    <div style="margin-bottom:15px; text-align:center">
-                        <h2>PYTHON SNAKE</h2>
-                        <div style="color:var(--text-dim)">Score: <span id="score">0</span> | High Score: <span id="high-score">0</span></div>
-                    </div>
-                    <canvas id="snake-canvas" width="400" height="400"></canvas>
-                    <button class="btn-primary" onclick="startGame()">Start Game</button>
-                    <p style="margin-top:10px; font-size:12px; color:var(--text-dim)">Use Arrow Keys to Move</p>
-                </div>
-            </div>
-
         </div>
-    </main>
-</div>
+    </section>
+
+    <section id="kanban" class="view-section">
+        <h2 style="margin-bottom:20px;">Project: Apollo Launch</h2>
+        <div class="kanban-container">
+            <div class="kanban-col" id="todo-col">
+                <div class="col-header">To Do <span style="background:#cbd5e0; padding:2px 8px; border-radius:10px; font-size:12px;">3</span></div>
+                <div class="task-card" onclick="moveCard(this)">
+                    <p>Design Landing Page</p>
+                    <div class="task-meta"><span>UI/UX</span><span>2d</span></div>
+                </div>
+                <div class="task-card" onclick="moveCard(this)">
+                    <p>Research Competitors</p>
+                    <div class="task-meta"><span>Marketing</span><span>1d</span></div>
+                </div>
+                <button class="add-btn" onclick="addTask()">+ Add New Task</button>
+            </div>
+
+            <div class="kanban-col" id="progress-col">
+                <div class="col-header">In Progress <span style="background:#f6ad55; color:white; padding:2px 8px; border-radius:10px; font-size:12px;">1</span></div>
+                <div class="task-card" style="border-color:#f6ad55" onclick="moveCard(this)">
+                    <p>Develop API Endpoints</p>
+                    <div class="task-meta"><span>Backend</span><span>4d</span></div>
+                </div>
+            </div>
+
+            <div class="kanban-col" id="done-col">
+                <div class="col-header">Done <span style="background:#68d391; color:white; padding:2px 8px; border-radius:10px; font-size:12px;">2</span></div>
+                <div class="task-card" style="border-color:#68d391; opacity:0.7" onclick="moveCard(this)">
+                    <p>Client Meeting</p>
+                    <div class="task-meta"><span>General</span><span>Done</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="focus" class="view-section">
+        <div class="timer-container">
+            <h2 style="margin-bottom:40px">Deep Focus Mode</h2>
+            <div class="timer-circle">
+                <svg class="timer-svg">
+                    <circle class="timer-path" cx="150" cy="150" r="140"></circle>
+                </svg>
+                <div class="time-display" id="time-display">25:00</div>
+            </div>
+            <div class="timer-controls">
+                <button class="btn-pill primary" onclick="toggleTimer()" id="start-btn">Start Focus</button>
+                <button class="btn-pill" onclick="resetTimer()">Reset</button>
+            </div>
+            <p style="margin-top:30px; color:var(--text-light); font-style:italic">"Creativity requires the courage to let go of certainties."</p>
+        </div>
+    </section>
+
+    <section id="playground" class="view-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2>Physics Canvas</h2>
+            <p style="font-size:12px; color:var(--text-light)">Click and drag to create gravity wells. Balls react to mouse.</p>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="physicsCanvas"></canvas>
+        </div>
+    </section>
+
+    <section id="ai" class="view-section">
+        <h2 style="margin-bottom:20px">Lumina Assistant</h2>
+        <div class="chat-interface">
+            <div class="chat-window" id="chat-window">
+                <div class="chat-bubble bot">Hello! I am Lumina. How can I assist with your workflow today?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your request here..." onkeypress="handleChat(event)">
+                <button class="btn-round" style="background:var(--accent); color:white;" onclick="sendChat()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
 
 <script>
-// PARTICLE BACKGROUND SYSTEM
-const bgCanvas = document.getElementById('bg-canvas');
-const bgCtx = bgCanvas.getContext('2d');
-let particles = [];
-function resizeBg() {
-    bgCanvas.width = window.innerWidth;
-    bgCanvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeBg);
-resizeBg();
+// --- GREETING LOGIC ---
+const hour = new Date().getHours();
+const greetEl = document.getElementById('greeting');
+if (hour < 12) greetEl.innerText = 'Good Morning, Creator';
+else if (hour < 18) greetEl.innerText = 'Good Afternoon, Creator';
+else greetEl.innerText = 'Good Evening, Creator';
 
-class Particle {
+// --- TAB NAVIGATION ---
+function switchTab(tabId, el) {
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    
+    // If switching to playground, resize canvas
+    if(tabId === 'playground') {
+        setTimeout(initPhysics, 100);
+    }
+}
+
+// --- KANBAN LOGIC (SIMPLE CLICK TO MOVE) ---
+function addTask() {
+    const title = prompt("Enter Task Title:");
+    if(title) {
+        const div = document.createElement('div');
+        div.className = 'task-card';
+        div.onclick = function() { moveCard(this) };
+        div.innerHTML = `<p>${title}</p><div class="task-meta"><span>New</span><span>0d</span></div>`;
+        document.getElementById('todo-col').insertBefore(div, document.getElementById('todo-col').lastElementChild);
+    }
+}
+
+function moveCard(card) {
+    const parent = card.parentElement.id;
+    if(parent === 'todo-col') {
+        document.getElementById('progress-col').appendChild(card);
+        card.style.borderColor = '#f6ad55';
+    } else if (parent === 'progress-col') {
+        document.getElementById('done-col').appendChild(card);
+        card.style.borderColor = '#68d391';
+        card.style.opacity = '0.7';
+    } else {
+        if(confirm("Delete this task?")) card.remove();
+    }
+}
+
+// --- FOCUS TIMER LOGIC ---
+let timerInterval;
+let timeLeft = 1500; // 25 mins
+let isRunning = false;
+const maxDash = 880;
+
+function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    document.getElementById('time-display').innerText = `${m}:${s}`;
+    
+    const offset = maxDash - (timeLeft / 1500) * maxDash;
+    document.querySelector('.timer-path').style.strokeDashoffset = offset;
+}
+
+function toggleTimer() {
+    if(isRunning) {
+        clearInterval(timerInterval);
+        document.getElementById('start-btn').innerText = "Resume Focus";
+        document.getElementById('start-btn').classList.remove('primary');
+    } else {
+        timerInterval = setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval);
+                alert("Focus Session Complete!");
+            }
+        }, 1000);
+        document.getElementById('start-btn').innerText = "Pause";
+        document.getElementById('start-btn').classList.add('primary');
+    }
+    isRunning = !isRunning;
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 1500;
+    isRunning = false;
+    updateTimerDisplay();
+    document.getElementById('start-btn').innerText = "Start Focus";
+}
+
+// --- PHYSICS PLAYGROUND (BALLS) ---
+const canvas = document.getElementById('physicsCanvas');
+const ctx = canvas.getContext('2d');
+let balls = [];
+let mouse = { x: null, y: null };
+
+class Ball {
     constructor() {
-        this.x = Math.random() * bgCanvas.width;
-        this.y = Math.random() * bgCanvas.height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2;
-        this.alpha = Math.random() * 0.5;
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = (Math.random() - 0.5) * 4;
+        this.size = Math.random() * 20 + 10;
+        this.color = `hsla(${Math.random()*60 + 220}, 80%, 60%, 0.8)`; // Blue/Purple hues
     }
     update() {
+        // Mouse interaction
+        if(mouse.x) {
+            const dx = mouse.x - this.x;
+            const dy = mouse.y - this.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < 150) {
+                const force = (150 - dist) / 150;
+                this.vx -= (dx/dist) * force * 2;
+                this.vy -= (dy/dist) * force * 2;
+            }
+        }
+
         this.x += this.vx;
         this.y += this.vy;
-        if(this.x < 0) this.x = bgCanvas.width;
-        if(this.x > bgCanvas.width) this.x = 0;
-        if(this.y < 0) this.y = bgCanvas.height;
-        if(this.y > bgCanvas.height) this.y = 0;
+
+        // Wall collision
+        if(this.x + this.size > canvas.width || this.x - this.size < 0) {
+            this.vx *= -0.9; // Bounce with friction
+            if(this.x + this.size > canvas.width) this.x = canvas.width - this.size;
+            if(this.x - this.size < 0) this.x = this.size;
+        }
+        if(this.y + this.size > canvas.height || this.y - this.size < 0) {
+            this.vy *= -0.9;
+            if(this.y + this.size > canvas.height) this.y = canvas.height - this.size;
+            if(this.y - this.size < 0) this.y = this.size;
+        }
+
+        // Friction
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        
+        // Gravity
+        this.vy += 0.2; 
     }
     draw() {
-        // FIXED: Replaced template literal with string concatenation for JSP compatibility
-        bgCtx.fillStyle = 'rgba(99, 102, 241, ' + this.alpha + ')';
-        bgCtx.beginPath();
-        bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        bgCtx.fill();
-    }
-}
-for(let i=0; i<100; i++) particles.push(new Particle());
-function animateBg() {
-    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    // Draw connections
-    particles.forEach((p1, i) => {
-        particles.slice(i+1).forEach(p2 => {
-            const dx = p1.x - p2.x;
-            const dy = p1.y - p2.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < 100) {
-                // FIXED: Replaced template literal with string concatenation for JSP compatibility
-                bgCtx.strokeStyle = 'rgba(99, 102, 241, ' + (0.1 * (1 - dist/100)) + ')';
-                bgCtx.beginPath();
-                bgCtx.moveTo(p1.x, p1.y);
-                bgCtx.lineTo(p2.x, p2.y);
-                bgCtx.stroke();
-            }
-        });
-    });
-    requestAnimationFrame(animateBg);
-}
-animateBg();
-
-// APP NAVIGATION
-function switchTab(tabId, el) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    el.classList.add('active');
-}
-
-// TRAFFIC CHART (Custom Implementation without Chart.js)
-function initChart() {
-    const c = document.getElementById('trafficChart');
-    if(!c) return;
-    const ctx = c.getContext('2d');
-    // Scale for HiDPI
-    const rect = c.parentElement.getBoundingClientRect();
-    c.width = rect.width;
-    c.height = rect.height;
-    
-    const data = [20, 45, 30, 60, 40, 75, 50];
-    const padding = 40;
-    const w = c.width - padding * 2;
-    const h = c.height - padding * 2;
-    const step = w / (data.length - 1);
-    const max = 100;
-
-    // Draw Grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-    ctx.lineWidth = 1;
-    for(let i=0; i<=5; i++) {
-        const y = padding + h - (h/5)*i;
-        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(padding + w, y); ctx.stroke();
-        ctx.fillStyle = '#64748b'; ctx.fillText(i*20, 10, y + 4);
-    }
-
-    // Draw Line
-    ctx.beginPath();
-    ctx.strokeStyle = '#6366f1';
-    ctx.lineWidth = 3;
-    data.forEach((d, i) => {
-        const x = padding + i * step;
-        const y = padding + h - (d/max)*h;
-        if(i===0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // Draw Gradient Area
-    ctx.lineTo(padding + w, padding + h);
-    ctx.lineTo(padding, padding + h);
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.1)';
-    ctx.fill();
-
-    // Draw Points
-    data.forEach((d, i) => {
-        const x = padding + i * step;
-        const y = padding + h - (d/max)*h;
         ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI*2);
-        ctx.fillStyle = '#fff';
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 10;
         ctx.fill();
-    });
-}
-setTimeout(initChart, 500);
-window.addEventListener('resize', initChart);
-
-// TERMINAL LOGIC
-const termInput = document.getElementById('term-input');
-const termOutput = document.getElementById('term-output');
-const commands = {
-    'help': 'Available commands: help, clear, whoami, date, echo [text], reboot',
-    'whoami': 'root (Feri Pro Administrator)',
-    'date': () => new Date().toString(),
-    'clear': () => { termOutput.innerHTML = ''; return ''; },
-    'reboot': 'System rebooting... (Just kidding, this is HTML)',
-    'ls': 'index.html  style.css  main.js  secret_plans.txt',
-    'cat secret_plans.txt': '1. Learn Java\n2. Master Maven\n3. Rule the World'
-};
-
-termInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        const input = this.value;
-        const cmd = input.split(' ')[0];
-        const args = input.substring(cmd.length + 1);
-        
-        const line = document.createElement('div');
-        line.className = 'output-line';
-        // FIXED: Replaced template literal with string concatenation for JSP compatibility
-        line.innerHTML = '<span class="prompt">feri@pro:~$</span> ' + input;
-        termOutput.appendChild(line);
-
-        let response = 'Command not found: ' + cmd;
-        if (commands[cmd]) {
-            response = typeof commands[cmd] === 'function' ? commands[cmd]() : commands[cmd];
-            if (cmd === 'echo') response = args;
-        }
-        
-        if(response) {
-            const respLine = document.createElement('div');
-            respLine.className = 'output-line';
-            respLine.innerText = response;
-            termOutput.appendChild(respLine);
-        }
-        
-        this.value = '';
-        termOutput.scrollTop = termOutput.scrollHeight;
+        ctx.shadowBlur = 0;
     }
+}
+
+function initPhysics() {
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+    balls = [];
+    for(let i=0; i<20; i++) balls.push(new Ball());
+}
+
+function animatePhysics() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    balls.forEach(b => { b.update(); b.draw(); });
+    requestAnimationFrame(animatePhysics);
+}
+
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
 });
+canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
 
-// SNAKE GAME LOGIC
-const cvs = document.getElementById('snake-canvas');
-const ctx = cvs.getContext('2d');
-const box = 20;
-let snake = [];
-let food;
-let score;
-let d;
-let game;
+window.addEventListener('resize', initPhysics);
+setTimeout(() => { initPhysics(); animatePhysics(); }, 500);
 
-function startGame() {
-    if(game) clearInterval(game);
-    snake = [{x: 9 * box, y: 10 * box}];
-    score = 0;
-    document.getElementById('score').innerText = score;
-    d = null;
-    spawnFood();
-    game = setInterval(drawGame, 100);
+
+// --- AI CHAT BOT LOGIC ---
+const responses = [
+    "That's an interesting perspective on the design.",
+    "I've added that to your task list automatically.",
+    "Focus timer suggests taking a break in 5 minutes.",
+    "I can optimize the code for that if you wish.",
+    "The weather looks good for a walk later.",
+    "Processing your request... Done."
+];
+
+function handleChat(e) {
+    if(e.key === 'Enter') sendChat();
 }
 
-document.addEventListener('keydown', direction);
-function direction(event) {
-    if(event.keyCode == 37 && d != "RIGHT") d = "LEFT";
-    else if(event.keyCode == 38 && d != "DOWN") d = "UP";
-    else if(event.keyCode == 39 && d != "LEFT") d = "RIGHT";
-    else if(event.keyCode == 40 && d != "UP") d = "DOWN";
+function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value;
+    if(!text.trim()) return;
+
+    // User Bubble
+    const win = document.getElementById('chat-window');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'chat-bubble user';
+    userDiv.innerText = text;
+    win.appendChild(userDiv);
+    
+    input.value = '';
+    win.scrollTop = win.scrollHeight;
+
+    // Bot Response
+    setTimeout(() => {
+        const botDiv = document.createElement('div');
+        botDiv.className = 'chat-bubble bot';
+        botDiv.innerText = responses[Math.floor(Math.random() * responses.length)];
+        win.appendChild(botDiv);
+        win.scrollTop = win.scrollHeight;
+    }, 1000);
 }
-
-function spawnFood() {
-    food = {
-        x: Math.floor(Math.random() * 19 + 1) * box,
-        y: Math.floor(Math.random() * 19 + 1) * box
-    };
-}
-
-function drawGame() {
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(0, 0, cvs.width, cvs.height);
-
-    for(let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i == 0) ? "#6366f1" : "#a5b4fc";
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        ctx.strokeStyle = "#1e293b";
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
-
-    ctx.fillStyle = "#10b981";
-    ctx.fillRect(food.x, food.y, box, box);
-
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if(d == "LEFT") snakeX -= box;
-    if(d == "UP") snakeY -= box;
-    if(d == "RIGHT") snakeX += box;
-    if(d == "DOWN") snakeY += box;
-
-    if(snakeX == food.x && snakeY == food.y) {
-        score++;
-        document.getElementById('score').innerText = score;
-        spawnFood();
-    } else {
-        if(d) snake.pop();
-    }
-
-    let newHead = {x: snakeX, y: snakeY};
-
-    if(snakeX < 0 || snakeX >= cvs.width || snakeY < 0 || snakeY >= cvs.height || collision(newHead, snake)) {
-        clearInterval(game);
-        ctx.fillStyle = "white";
-        ctx.font = "30px Arial";
-        ctx.fillText("GAME OVER", 110, 200);
-        const high = document.getElementById('high-score');
-        if(score > parseInt(high.innerText)) high.innerText = score;
-    }
-
-    if(d) snake.unshift(newHead);
-}
-
-function collision(head, array) {
-    for(let i = 0; i < array.length; i++) {
-        if(head.x == array[i].x && head.y == array[i].y) return true;
-    }
-    return false;
-}
-
-// SYSTEM MONITOR SIMULATION
-setInterval(() => {
-    const cpu = Math.floor(Math.random() * 30) + 20;
-    const mem = (Math.random() * 0.5 + 1.0).toFixed(1);
-    document.getElementById('cpu-val').innerText = cpu + '%';
-    document.getElementById('cpu-bar').style.width = cpu + '%';
-    document.getElementById('mem-val').innerText = mem + 'GB';
-}, 2000);
-
 </script>
 </body>
 </html>
